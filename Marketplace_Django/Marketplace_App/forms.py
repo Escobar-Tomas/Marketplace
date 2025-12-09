@@ -1,5 +1,5 @@
 from django import forms
-from .models import Anuncio, PerfilUsuario
+from .models import Anuncio, PerfilUsuario, Reporte
 
 class ContactForm(forms.Form):
     name = forms.CharField(label='Nombre', max_length=100)
@@ -46,4 +46,17 @@ class PerfilUsuarioForm(forms.ModelForm):
         widgets = {
             'telefono_contacto': forms.TextInput(attrs={'placeholder': 'Ej: 381-1234567'}),
             'ubicacion_contacto': forms.TextInput(attrs={'placeholder': 'Ej: Yerba Buena, San Miguel de Tucumán'}),
+        }
+
+class ReporteForm(forms.ModelForm):
+    class Meta:
+        model = Reporte
+        fields = ['motivo', 'descripcion_reporte']
+        labels = {
+            'motivo': 'Motivo del reporte',
+            'descripcion_reporte': 'Detalles adicionales (opcional)',
+        }
+        widgets = {
+            'motivo': forms.TextInput(attrs={'placeholder': 'Ej: Estafa, Artículo prohibido, Spam...'}),
+            'descripcion_reporte': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Explica brevemente por qué reportas este anuncio.'}),
         }

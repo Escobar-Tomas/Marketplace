@@ -23,6 +23,6 @@ urlpatterns = [
     path('verificar-telefono/', views.verificar_telefono, name='verificar_telefono'),
     path('validar-sms/', views.validar_codigo_telefono, name='validar_codigo_telefono'),
     
-    # BORRA ESTA LÍNEA SI LA TIENES, ES LA QUE DA ERROR:
-    # path('verificar-registro/', views.verificar_registro, name='verificar_registro'),
+    # --- RUTAS PARA REPORTAR ANUNCIOS---
+    path('anuncio/reportar/<int:pk>/', views.reportar_anuncio, name='reportar_anuncio'),
 ]

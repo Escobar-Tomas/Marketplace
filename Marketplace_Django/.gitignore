@@ -1,0 +1,24 @@
+# Python y Django
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+db.sqlite3
+.DS_Store
+
+# Entornos Virtuales
+venv/
+env/
+.venv/
+
+# Variables de Entorno (¡MUY IMPORTANTE NO SUBIR ESTO!)
+.env
+
+# Archivos estáticos y media (Opcional, depende de cómo manejes los uploads)
+# Normalmente no se suben las imágenes de prueba locales
+/media/
+/static/
+
+# Editor de Código
+.vscode/
+.idea/

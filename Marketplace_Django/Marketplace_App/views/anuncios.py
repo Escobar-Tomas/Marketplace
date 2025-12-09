@@ -7,8 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
 # Importamos los modelos desde el paquete superior
-from Marketplace_App.models import Anuncio, Categoria
-from Marketplace_App.forms import AnuncioForm
+from Marketplace_App.models import Anuncio, Categoria, Reporte
+from Marketplace_App.forms import AnuncioForm, ReporteForm
 
 def home(request, categoria_slug=None):
     # ... (lógica inicial de categorías, productos base y ubicaciones) ...
@@ -86,16 +86,7 @@ def crear_anuncio(request):
             messages.warning(request, "⚠️ Para publicar anuncios, primero debes verificar tu número de celular.")
             return redirect('verificar_telefono')
     except Exception:
-        return redirect('verificar_telefono')
-    
-    # --- BLOQUE DE SEGURIDAD (Nuevo) ---
-    try:
-        # Verificamos si tiene perfil y si está verificado
-        if not hasattr(request.user, 'perfil') or not request.user.perfil.telefono_verificado:
-            messages.warning(request, "⚠️ Para publicar anuncios, primero debes verificar tu número de celular.")
-            return redirect('verificar_telefono')
-    except Exception:
-        # Si ocurre cualquier error extraño, lo mandamos a verificar por seguridad
+        # Si no tiene perfil, lo mandamos a crear uno verificando el teléfono
         return redirect('verificar_telefono')
     
     if request.method == 'POST':
@@ -147,3 +138,28 @@ def eliminar_anuncio(request, pk):
         return redirect('mi_perfil')
         
     return redirect('mi_perfil')
+
+@login_required
+def reportar_anuncio(request, pk):
+    anuncio = get_object_or_404(Anuncio, pk=pk)
+    
+    if request.method == 'POST':
+        form = ReporteForm(request.POST)
+        if form.is_valid():
+            reporte = form.save(commit=False)
+            # Llenamos los datos automáticos
+            reporte.usuario_reportador = request.user
+            reporte.tipo_entidad_reportada = 'ANUNCIO'
+            reporte.identificador_entidad_reportada = anuncio.id
+            reporte.save()
+            
+            messages.success(request, "El reporte ha sido enviado a los administradores.")
+            return redirect('detalle_anuncio', pk=pk)
+    else:
+        form = ReporteForm()
+        
+    context = {
+        'form': form,
+        'anuncio': anuncio
+    }
+    return render(request, 'Marketplace_App/formularios/reportar_anuncio.html', context)
