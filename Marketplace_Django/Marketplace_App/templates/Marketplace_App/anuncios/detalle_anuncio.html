@@ -5,10 +5,10 @@
 
 {% block content %}
 
-<nav class="flex mb-6 text-gray-500 text-sm" aria-label="Breadcrumb">
+<nav class="flex mb-6 text-gray-500 dark:text-gray-400 text-sm" aria-label="Breadcrumb">
     <ol class="inline-flex items-center space-x-1 md:space-x-3">
         <li class="inline-flex items-center">
-            <a href="{% url 'home' %}" class="inline-flex items-center hover:text-blue-600 transition-colors">
+            <a href="{% url 'home' %}" class="inline-flex items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                 <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
                 Inicio
             </a>
@@ -16,13 +16,13 @@
         <li>
             <div class="flex items-center">
                 <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                <a href="{% url 'home_por_categoria' anuncio.categoria.slug %}" class="ml-1 md:ml-2 hover:text-blue-600 transition-colors">{{ anuncio.categoria.nombre }}</a>
+                <a href="{% url 'home_por_categoria' anuncio.categoria.slug %}" class="ml-1 md:ml-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{{ anuncio.categoria.nombre }}</a>
             </div>
         </li>
         <li aria-current="page">
             <div class="flex items-center">
                 <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                <span class="ml-1 md:ml-2 text-gray-700 font-medium truncate max-w-xs">{{ anuncio.titulo }}</span>
+                <span class="ml-1 md:ml-2 text-gray-700 dark:text-gray-300 font-medium truncate max-w-xs">{{ anuncio.titulo }}</span>
             </div>
         </li>
     </ol>
@@ -32,13 +32,13 @@
     
     <div class="lg:col-span-2 space-y-8">
         
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="w-full aspect-w-4 aspect-h-3 bg-gray-50 flex items-center justify-center relative group">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div class="w-full aspect-w-4 aspect-h-3 bg-gray-50 dark:bg-gray-700 flex items-center justify-center relative group">
                 {% if anuncio.imagen_principal %}
                     <div class="absolute inset-0 bg-cover bg-center blur-xl opacity-50" style="background-image: url('{{ anuncio.imagen_principal.url }}');"></div>
                     <img src="{{ anuncio.imagen_principal.url }}" alt="{{ anuncio.titulo }}" class="relative z-10 w-full h-full object-contain p-4 transition-transform duration-300 group-hover:scale-105">
                 {% else %}
-                    <div class="flex flex-col items-center text-gray-400">
+                    <div class="flex flex-col items-center text-gray-400 dark:text-gray-500">
                         <svg class="w-20 h-20 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         <span class="text-lg">Sin Imagen</span>
                     </div>
@@ -46,32 +46,32 @@
             </div>
         </div>
 
-        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-            <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
                 Descripción
             </h2>
-            <div class="prose max-w-none text-gray-600 leading-relaxed whitespace-pre-wrap">{{ anuncio.descripcion }}</div>
+            <div class="prose max-w-none text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{{ anuncio.descripcion }}</div>
         </div>
     </div>
 
     <div class="lg:col-span-1">
         <div class="sticky top-24 space-y-6">
             
-            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
                 <div class="mb-4">
-                    <span class="text-gray-500 text-sm uppercase tracking-wider font-semibold">{{ anuncio.get_estado_display }}</span>
-                    <h1 class="text-3xl font-bold text-gray-900 mt-1 leading-tight">{{ anuncio.titulo }}</h1>
+                    <span class="text-gray-500 dark:text-gray-400 text-sm uppercase tracking-wider font-semibold">{{ anuncio.get_estado_display }}</span>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mt-1 leading-tight">{{ anuncio.titulo }}</h1>
                     <div class="mt-4 flex items-baseline gap-1">
-                        <span class="text-4xl font-extrabold text-blue-600">${{ anuncio.precio|floatformat:0 }}</span>
+                        <span class="text-4xl font-extrabold text-blue-600 dark:text-blue-400">${{ anuncio.precio|floatformat:0 }}</span>
                         <span class="text-gray-400 text-lg">ARS</span>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 text-gray-600 text-sm mb-6 bg-gray-50 p-3 rounded-lg">
+                <div class="flex items-center gap-2 text-gray-600 dark:text-gray-300 text-sm mb-6 bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     {{ anuncio.ubicacion }}
-                    <span class="mx-1 text-gray-300">|</span>
+                    <span class="mx-1 text-gray-300 dark:text-gray-600">|</span>
                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     Publicado el {{ anuncio.fecha_publicacion|date:"d M" }}
                 </div>
@@ -85,36 +85,36 @@
                     </a>
                     <p class="text-xs text-center text-gray-400 mt-2">Abre chat directo en WhatsApp</p>
                 {% else %}
-                    <button disabled class="w-full bg-gray-100 text-gray-400 font-bold py-3 px-4 rounded-xl cursor-not-allowed flex items-center justify-center gap-2">
+                    <button disabled class="w-full bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 font-bold py-3 px-4 rounded-xl cursor-not-allowed flex items-center justify-center gap-2">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         Teléfono no disponible
                     </button>
                 {% endif %}
             </div>
 
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+            <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4">
                 <div class="flex-shrink-0">
                     {% if anuncio.usuario.perfil.imagen %}
-                        <img class="h-14 w-14 rounded-full object-cover border-2 border-white shadow-sm" src="{{ anuncio.usuario.perfil.imagen.url }}" alt="{{ anuncio.usuario.username }}">
+                        <img class="h-14 w-14 rounded-full object-cover border-2 border-white dark:border-gray-600 shadow-sm" src="{{ anuncio.usuario.perfil.imagen.url }}" alt="{{ anuncio.usuario.username }}">
                     {% else %}
-                        <img class="h-14 w-14 rounded-full object-cover border-2 border-white shadow-sm" src="https://ui-avatars.com/api/?name={{ anuncio.usuario.username }}&background=0D8ABC&color=fff" alt="{{ anuncio.usuario.username }}">
+                        <img class="h-14 w-14 rounded-full object-cover border-2 border-white dark:border-gray-600 shadow-sm" src="https://ui-avatars.com/api/?name={{ anuncio.usuario.username }}&background=0D8ABC&color=fff" alt="{{ anuncio.usuario.username }}">
                     {% endif %}
                 </div>
                 
                 <div>
-                    <p class="text-sm text-gray-500">Vendido por</p>
-                    <h3 class="font-bold text-gray-900 text-lg">{{ anuncio.usuario.username }}</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Vendido por</p>
+                    <h3 class="font-bold text-gray-900 dark:text-white text-lg">{{ anuncio.usuario.username }}</h3>
                     <p class="text-xs text-gray-400">Se unió en {{ anuncio.usuario.date_joined|date:"M Y" }}</p>
                 </div>
             </div>
 
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 text-center">
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 text-center">
                 <p class="text-xs text-gray-400 mb-3">
                     ¿Ves algo sospechoso en esta publicación?
                 </p>
                 
                 <a href="{% url 'reportar_anuncio' pk=anuncio.id %}" 
-                   class="w-full flex items-center justify-center gap-2 border border-gray-200 text-gray-600 font-medium py-2.5 px-4 rounded-xl hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all duration-200 group">
+                   class="w-full flex items-center justify-center gap-2 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 font-medium py-2.5 px-4 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 hover:border-red-200 dark:hover:border-red-800 transition-all duration-200 group">
                     <svg class="w-5 h-5 text-gray-400 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                     </svg>

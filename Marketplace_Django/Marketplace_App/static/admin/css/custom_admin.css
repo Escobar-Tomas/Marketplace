@@ -1,0 +1,140 @@
+/* =========================================
+   CUSTOM ADMIN CSS - MODO OSCURO COMPATIBLE
+   ========================================= */
+
+/* 1. VARIABLES (Tema Claro por defecto) */
+:root {
+    --primary-color: #2563eb;       /* Azul Moderno */
+    --secondary-color: #1e40af;     /* Azul Oscuro */
+    --accent-color: #f59e0b;        /* Naranja */
+    --header-bg: #1e293b;           /* Azul noche */
+    --header-text: #ffffff;
+}
+
+/* 2. HEADER PRINCIPAL */
+#header {
+    background: var(--header-bg);
+    color: var(--header-text);
+    padding: 12px 20px;
+    height: auto; /* Dejar automático para evitar cortes */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: none;
+}
+
+/* Branding (Izquierda) */
+#branding h1 {
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin: 0;
+}
+
+#branding a {
+    color: var(--header-text) !important;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#branding svg {
+    color: var(--accent-color);
+}
+
+/* 3. HERRAMIENTAS DE USUARIO (Recuperando los botones) */
+/* NO ocultamos #user-tools, solo lo estilizamos */
+#user-tools {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Mensaje de Bienvenida */
+#user-tools strong {
+    color: var(--header-text);
+    margin-right: 5px;
+}
+
+/* Enlaces (Ver sitio / Cambiar contraseña / Cerrar sesión) */
+#user-tools a {
+    color: rgba(255, 255, 255, 0.8) !important;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 2px;
+    transition: all 0.2s;
+}
+
+#user-tools a:hover {
+    color: #ffffff !important;
+    border-bottom-color: var(--accent-color);
+}
+
+/* Ocultar los separadores "/" feos */
+#user-tools span.separator {
+    display: none;
+}
+
+/* Convertir el botón de Logout (si es un form) en texto limpio */
+#user-tools form {
+    display: inline;
+}
+
+#user-tools button {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 15px;
+    font-family: inherit;
+}
+
+#user-tools button:hover {
+    color: #ef4444; /* Rojo al pasar el mouse */
+    text-decoration: underline;
+}
+
+/* 4. MODO OSCURO (Ajustes específicos) */
+@media (prefers-color-scheme: dark) {
+    /* En modo oscuro, Django ya pone el fondo negro. 
+       Solo aseguramos que nuestros colores no lo rompan. */
+
+    /* Ajustar módulos para que no sean blancos brillantes */
+    .module, .module caption {
+        background: inherit; /* Heredar el gris oscuro de Django */
+        color: inherit;
+    }
+    
+    /* Botones principales */
+    .button, input[type=submit], .submit-row input {
+        background: var(--primary-color);
+        color: #fff;
+    }
+}
+
+/* 5. RESPONSIVIDAD (Móvil) */
+@media (max-width: 768px) {
+    #header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    #user-tools {
+        width: 100%;
+        justify-content: space-between;
+        font-size: 0.7rem;
+    }
+    
+    #user-tools strong {
+        display: none; /* Ocultar "Bienvenido" en móvil */
+    }
+}

@@ -122,9 +122,21 @@ STATIC_URL = 'static/'
 
 import os
 
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = 'static/'
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'Marketplace_App/static'),
 ]
+
+# Aquí es donde el servidor juntará todos los archivos (admin + app)
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# SEGURIDAD: En producción DEBUG será False, en tu PC será True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
+
+# DOMINIOS: Permitimos tu PC y los servidores de PythonAnywhere
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.pythonanywhere.com']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

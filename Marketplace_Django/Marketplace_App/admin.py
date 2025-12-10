@@ -71,3 +71,8 @@ admin.site.register(Anuncio, AnuncioAdmin)
 admin.site.register(PerfilUsuario, PerfilUsuarioAdmin)
 admin.site.register(Reporte, ReporteAdmin)
 # admin.site.register(Comentario) # Descomenta si quieres moderar comentarios también
+
+# --- PERSONALIZACIÓN DEL PANEL ---
+admin.site.site_header = "Administración Marketplace Tucumán"  # Texto en la barra azul superior
+admin.site.site_title = "Portal de Admins"                     # Título de la pestaña del navegador
+admin.site.index_title = "Bienvenido al Centro de Control"     # Título principal de la página de inicio
