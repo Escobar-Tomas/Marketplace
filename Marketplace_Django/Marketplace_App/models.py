@@ -75,6 +75,7 @@ class Anuncio(models.Model):
         ('NUEVO', 'Nuevo'),
         ('USADO', 'Usado'),
         ('REACONDICIONADO', 'Reacondicionado'),
+        ('VENDIDO', 'Vendido'),
     ]
 
     # Relaciones (Foreign Keys)

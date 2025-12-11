@@ -18,6 +18,7 @@ urlpatterns = [
     path('perfil/editar/', views.editar_perfil, name='editar_perfil'),
     path('anuncio/editar/<int:pk>/', views.editar_anuncio, name='editar_anuncio'),
     path('anuncio/eliminar/<int:pk>/', views.eliminar_anuncio, name='eliminar_anuncio'),
+    path('anuncio/vendido/<int:pk>/', views.marcar_vendido, name='marcar_vendido'),
 
     # --- RUTAS DE VERIFICACIÓN DE TELÉFONO (LAS NUEVAS) ---
     path('verificar-telefono/', views.verificar_telefono, name='verificar_telefono'),
