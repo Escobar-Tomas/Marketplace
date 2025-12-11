@@ -2,12 +2,18 @@ from django.urls import path
 from Marketplace_App import views
 from django.contrib.auth import views as auth_views
 
+# Importamos la vista específica que acabamos de crear/mejorar en usuarios.py
+from Marketplace_App.views.usuarios import verificar_registro 
+
 urlpatterns = [
     path('', views.home, name='home'),
     path('categoria/<slug:categoria_slug>/', views.home, name='home_por_categoria'),
     
     # Rutas de Usuario
     path('registro', views.registro, name='registro'),
+    # NUEVA RUTA NECESARIA
+    path('registro/verificar/', verificar_registro, name='verificar_registro'), 
+    
     path('login', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
     
@@ -20,14 +26,13 @@ urlpatterns = [
     path('anuncio/eliminar/<int:pk>/', views.eliminar_anuncio, name='eliminar_anuncio'),
     path('anuncio/vendido/<int:pk>/', views.marcar_vendido, name='marcar_vendido'),
 
-    # --- RUTAS DE VERIFICACIÓN DE TELÉFONO (LAS NUEVAS) ---
+    # Rutas de verificación de teléfono
     path('verificar-telefono/', views.verificar_telefono, name='verificar_telefono'),
     path('validar-sms/', views.validar_codigo_telefono, name='validar_codigo_telefono'),
     
-    # --- RUTAS PARA REPORTAR ANUNCIOS---
     path('anuncio/reportar/<int:pk>/', views.reportar_anuncio, name='reportar_anuncio'),
     
-    # --- RECUPERACIÓN DE CONTRASEÑA ---
+    # Recuperación de contraseña
     path('password_reset/', 
          auth_views.PasswordResetView.as_view(template_name='registration/password_reset_form.html'), 
          name='password_reset'),

@@ -23,10 +23,8 @@ def login_view(request):
             
             # Lógica de "Recordarme"
             if request.POST.get('remember_me'):
-                # La sesión dura 30 días (en segundos)
                 request.session.set_expiry(30 * 24 * 60 * 60) 
             else:
-                # La sesión expira al cerrar el navegador
                 request.session.set_expiry(0) 
                 
             messages.success(request, f'¡Bienvenido de nuevo, {user.username}!')
@@ -38,7 +36,7 @@ def login_view(request):
 
     return render(request, 'registration/login.html', {'form': form})
 
-# --- 2. REGISTRO (Paso 1: Datos + Envio de Código) ---
+# --- 2. REGISTRO (Mejorado para fallos de mail) ---
 def registro(request):
     if request.method == 'POST':
         formulario_registro = RegisterForm(request.POST)
@@ -49,38 +47,59 @@ def registro(request):
             password2 = formulario_registro.cleaned_data['password2']
             
             if password == password2:
+                user = None
                 try:
-                    # Verificar si el email ya existe
-                    if User.objects.filter(email=email).exists():
-                        messages.error(request, "Este correo electrónico ya está registrado.")
-                        return render(request, 'Marketplace_App/usuarios/registro.html', {'formulario_registro': formulario_registro})
-
-                    # Creamos el usuario pero INACTIVO
-                    user = User.objects.create_user(username=username, email=email, password=password)
-                    user.is_active = False 
-                    user.save()
+                    # 1. Verificar si el email existe
+                    usuario_existente = User.objects.filter(email=email).first()
                     
-                    # Generamos código de verificación
+                    if usuario_existente:
+                        # SI existe pero NO está activo, es un intento fallido anterior. Lo reciclamos.
+                        if not usuario_existente.is_active:
+                            user = usuario_existente
+                            user.username = username
+                            user.set_password(password)
+                            user.save()
+                        else:
+                            messages.error(request, "Este correo electrónico ya está registrado y activo.")
+                            return render(request, 'Marketplace_App/usuarios/registro.html', {'formulario_registro': formulario_registro})
+                    else:
+                        # Verificar username
+                        if User.objects.filter(username=username).exists():
+                             messages.error(request, "Este nombre de usuario ya está en uso.")
+                             return render(request, 'Marketplace_App/usuarios/registro.html', {'formulario_registro': formulario_registro})
+
+                        # Crear usuario nuevo INACTIVO
+                        user = User.objects.create_user(username=username, email=email, password=password)
+                        user.is_active = False 
+                        user.save()
+                    
+                    # 2. Generar código
                     codigo = random.randint(100000, 999999)
                     
-                    # Guardamos datos en la sesión temporalmente para el siguiente paso
+                    # 3. Guardar en sesión
                     request.session['registro_user_id'] = user.id
                     request.session['registro_codigo'] = codigo
                     
-                    # Enviar correo
+                    # 4. Intentar enviar correo (Punto crítico)
+                    print(f"Intentando enviar correo a {email} usando {settings.EMAIL_HOST_USER}") # Log para consola
                     send_mail(
                         'Verifica tu cuenta - Marketplace',
                         f'Tu código de activación es: {codigo}',
-                        settings.EMAIL_HOST_USER,
+                        settings.EMAIL_HOST_USER or 'noreply@marketplace.com', # Fallback para evitar error None
                         [email],
                         fail_silently=False,
                     )
                     
                     messages.info(request, f'Te hemos enviado un código a {email}. Ingrésalo para activar tu cuenta.')
-                    return redirect('verificar_registro') # Vamos al paso 2
+                    return redirect('verificar_registro') # Esta URL debe existir en urls.py como 'validar-sms' o similar
                     
                 except Exception as e:
-                    messages.error(request, f"Error en el registro: {e}")
+                    # SI FALLA EL MAIL: Borramos el usuario para que no quede "zombi" y pueda reintentar
+                    if user and not usuario_existente: # Solo borramos si lo acabamos de crear
+                        user.delete()
+                    
+                    print(f"ERROR ENVIO MAIL: {str(e)}") # Importante para ver en la consola de PythonAnywhere
+                    messages.error(request, f"Hubo un error enviando el correo. Por favor verifica que el email sea real. Error: {e}")
             else:
                 messages.error(request, "Las contraseñas no coinciden.")
     else:
@@ -88,7 +107,8 @@ def registro(request):
     
     return render(request, 'Marketplace_App/usuarios/registro.html', {'formulario_registro': formulario_registro})
 
-# --- 3. VERIFICACIÓN DE REGISTRO (Paso 2: Ingresar Código) ---
+# --- 3. VERIFICACIÓN DE REGISTRO (Paso 2) ---
+# Nota: Asegúrate de tener una URL apuntando aquí, ej: path('verificar-registro/', views.verificar_registro, name='verificar_registro')
 def verificar_registro(request):
     # Si no hay un proceso de registro en curso, mandar al home
     if 'registro_user_id' not in request.session:
@@ -99,56 +119,52 @@ def verificar_registro(request):
         codigo_generado = request.session.get('registro_codigo')
         user_id = request.session.get('registro_user_id')
         
-        if str(codigo_ingresado) == str(codigo_generado):
+        # Comparar strings y quitar espacios
+        if str(codigo_ingresado).strip() == str(codigo_generado).strip():
             try:
                 # Activar el usuario
                 user = User.objects.get(id=user_id)
                 user.is_active = True
                 user.save()
                 
-                # Crear perfil si no existe (buena práctica)
+                # Crear perfil si no existe
                 PerfilUsuario.objects.get_or_create(usuario=user)
                 
                 # Limpiar sesión temporal
-                del request.session['registro_user_id']
-                del request.session['registro_codigo']
+                if 'registro_user_id' in request.session: del request.session['registro_user_id']
+                if 'registro_codigo' in request.session: del request.session['registro_codigo']
                 
-                messages.success(request, '¡Cuenta verificada exitosamente! Ahora puedes iniciar sesión.')
-                return redirect('login')
+                # Iniciar sesión automáticamente
+                login(request, user)
+                
+                messages.success(request, '¡Cuenta verificada exitosamente! Bienvenido.')
+                return redirect('home')
                 
             except User.DoesNotExist:
-                messages.error(request, 'Error al encontrar el usuario.')
+                messages.error(request, 'Error al encontrar el usuario. Intenta registrarte de nuevo.')
+                return redirect('registro')
         else:
             messages.error(request, 'Código incorrecto. Inténtalo de nuevo.')
 
-    # Reutilizamos tu template verificacion_2fa.html
     return render(request, 'Marketplace_App/formularios/verificacion_2fa.html')
 
 @login_required
 def verificar_telefono(request):
-    # Obtenemos o creamos el perfil del usuario actual
     perfil, created = PerfilUsuario.objects.get_or_create(usuario=request.user)
     
     if request.method == 'POST':
         telefono = request.POST.get('telefono')
         
         if telefono:
-            # 1. Guardamos el número en el perfil (marcado como NO verificado aún)
             perfil.telefono_contacto = telefono
             perfil.telefono_verificado = False 
             perfil.save()
             
-            # 2. Generamos código aleatorio de 6 dígitos
             codigo = random.randint(100000, 999999)
-            
-            # 3. Guardamos el código en la sesión (memoria temporal)
             request.session['sms_codigo'] = codigo
             
-            # 4. SIMULACIÓN: Imprimir en la consola negra (Terminal)
-            print(f"\n{'='*40}")
-            print(f" >>> SIMULACIÓN SMS A {telefono} <<<")
-            print(f" >>> CÓDIGO: {codigo} <<<")
-            print(f"{'='*40}\n")
+            # SIMULACIÓN (Ya que no hay SMS real configurado)
+            print(f">>> SIMULACIÓN SMS: El código para {telefono} es {codigo} <<<")
             
             messages.info(request, f"Te enviamos un código de verificación al {telefono}.")
             return redirect('validar_codigo_telefono')
@@ -163,21 +179,11 @@ def validar_codigo_telefono(request):
         codigo_ingresado = request.POST.get('codigo')
         codigo_real = request.session.get('sms_codigo')
         
-        # --- INICIO DEPURACIÓN (Míralo en tu consola negra) ---
-        print(f"--- DEBUG VERIFICACIÓN ---")
-        print(f"Código en Sesión (Real): {codigo_real} (Tipo: {type(codigo_real)})")
-        print(f"Código Ingresado (User): {codigo_ingresado} (Tipo: {type(codigo_ingresado)})")
-        # ----------------------------------------------------
-
-        # CORRECCIÓN: Convertir ambos a string y usar .strip() para quitar espacios
         if codigo_real and str(codigo_ingresado).strip() == str(codigo_real):
-            
-            # ¡ÉXITO!
             perfil = request.user.perfil
             perfil.telefono_verificado = True
             perfil.save()
             
-            # Limpiamos sesión
             if 'sms_codigo' in request.session:
                 del request.session['sms_codigo']
             
@@ -210,30 +216,22 @@ def mi_perfil(request):
 
 @login_required
 def editar_perfil(request):
-    """Procesa el POST del modal de perfil"""
     perfil, created = PerfilUsuario.objects.get_or_create(usuario=request.user)
     
     if request.method == 'POST':
         form = PerfilUsuarioForm(request.POST, request.FILES, instance=perfil)
         
         if form.is_valid():
-            # --- PARCHE DE SEGURIDAD ---
-            # Verificamos si el usuario tocó el campo del teléfono
             if 'telefono_contacto' in form.changed_data:
-                # Si cambió el número (o lo borró), reseteamos la verificación
                 instancia = form.save(commit=False)
                 instancia.telefono_verificado = False
                 instancia.save()
-                
-                # Opcional: Avisar al usuario si borró el número
                 if not instancia.telefono_contacto:
                      messages.warning(request, 'Has eliminado tu teléfono. Necesitarás verificar uno nuevo para publicar.')
                 else:
                      messages.info(request, 'Al cambiar tu número, deberás verificarlo nuevamente para publicar.')
             else:
-                # Si no tocó el teléfono, guardamos normal
                 form.save()
-            # ---------------------------
 
             messages.success(request, 'Perfil actualizado correctamente.')
         else:
