@@ -1,3 +1,3 @@
 from .anuncios import home, crear_anuncio, detalle_anuncio, editar_anuncio, eliminar_anuncio, marcar_vendido, reportar_anuncio
 
-from .usuarios import registro, mi_perfil, editar_perfil, login_view, verificar_telefono, validar_codigo_telefono
+from .usuarios import registro, mi_perfil, editar_perfil, login_view, verificar_telefono, validar_codigo_telefono, verificar_registro

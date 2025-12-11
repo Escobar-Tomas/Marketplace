@@ -2,9 +2,6 @@ from django.urls import path
 from Marketplace_App import views
 from django.contrib.auth import views as auth_views
 
-# Importamos la vista específica que acabamos de crear/mejorar en usuarios.py
-from Marketplace_App.views.usuarios import verificar_registro 
-
 urlpatterns = [
     path('', views.home, name='home'),
     path('categoria/<slug:categoria_slug>/', views.home, name='home_por_categoria'),
@@ -12,7 +9,7 @@ urlpatterns = [
     # Rutas de Usuario
     path('registro', views.registro, name='registro'),
     # NUEVA RUTA NECESARIA
-    path('registro/verificar/', verificar_registro, name='verificar_registro'), 
+    path('registro/verificar/', views.verificar_registro, name='verificar_registro'), 
     
     path('login', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
